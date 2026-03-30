@@ -163,24 +163,33 @@ export default function PipelineCalculatorPage() {
               
               <h2 className="text-2xl font-bold tracking-tight mb-8">Your Pipeline Diagnosis</h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-                <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10 w-full">
+                <motion.div 
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 transition-colors hover:border-gold-500/30"
+                >
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Baseline Revenue</span>
-                  <span className="text-3xl font-black text-white block mb-1">{formatCurrency(baseline)}</span>
+                  <span className="text-2xl md:text-3xl font-black text-white block mb-1 break-words">{formatCurrency(baseline)}</span>
                   <span className="text-xs text-gray-500">If contacted &lt; 5 mins</span>
-                </div>
+                </motion.div>
                 
-                <div className="bg-red-950/20 border border-red-900/30 rounded-xl p-5 relative overflow-hidden">
+                <motion.div 
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-red-950/20 border border-red-900/30 rounded-xl p-5 relative overflow-hidden transition-colors hover:border-red-500/30"
+                >
                   <span className="text-xs font-bold text-red-400 uppercase tracking-wider block mb-1">Your "Latency Tax"</span>
-                  <span className="text-3xl font-black text-red-500 block mb-1">-{formatCurrency(latencyTax)}</span>
+                  <span className="text-2xl md:text-3xl font-black text-red-500 block mb-1 break-words">-{formatCurrency(latencyTax)}</span>
                   <span className="text-xs text-red-500/70">Pipeline burned</span>
-                </div>
+                </motion.div>
                 
-                <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5">
+                <motion.div 
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 transition-colors hover:border-gold-500/30"
+                >
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Actual Captured</span>
-                  <span className="text-3xl font-black text-white block mb-1">{formatCurrency(actualCaptured)}</span>
+                  <span className="text-2xl md:text-3xl font-black text-white block mb-1 break-words">{formatCurrency(actualCaptured)}</span>
                   <span className="text-xs text-gray-500">What sales actually closes</span>
-                </div>
+                </motion.div>
               </div>
 
               {latencyTax > 0 ? (
@@ -198,7 +207,9 @@ export default function PipelineCalculatorPage() {
                   </p>
                   <a
                     href="https://calendly.com/your-booking-link"
-                    className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-lg shadow-red-900/20"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-lg shadow-red-900/20 cursor-pointer"
                   >
                     Book a Pipeline Architecture Audit
                   </a>
