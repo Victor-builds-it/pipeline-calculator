@@ -70,14 +70,9 @@ export default function PipelineCalculatorPage() {
 
         {/* INPUT CARD */}
         <div className="bg-charcoal-900 border border-charcoal-800 rounded-2xl p-6 md:p-8 shadow-2xl shadow-black/50 mb-10 ring-1 ring-white/5">
-          <div className="mb-6 border-b border-charcoal-800 pb-4 flex justify-between items-start">
-            <div>
-              <h2 className="text-xl font-bold text-white tracking-tight">Enter Your Numbers</h2>
-              <p className="text-sm text-gray-400 mt-1">Fill in the 4 fields below. The math will do the rest.</p>
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gold-500/50 border border-gold-500/10 px-2 py-1 rounded">
-              Audit Value: $1,000
-            </span>
+          <div className="mb-6 border-b border-charcoal-800 pb-4">
+            <h2 className="text-xl font-bold text-white tracking-tight">Enter Your Numbers</h2>
+            <p className="text-sm text-gray-400 mt-1">Fill in the 4 fields below. The math will do the rest.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -156,6 +151,7 @@ export default function PipelineCalculatorPage() {
         <AnimatePresence>
           {showResults && (
             <motion.div
+              key={`${baseline}-${latencyTax}`}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-charcoal-900 border border-charcoal-800 rounded-2xl p-6 md:p-8 shadow-2xl ring-1 ring-white/5 relative overflow-hidden"
@@ -201,7 +197,7 @@ export default function PipelineCalculatorPage() {
                     We work for free until that red number turns green.
                   </p>
                   <a
-                    href={`mailto:chukwujekwuvictor01@gmail.com?subject=Pipeline Architecture Audit&body=Hi Victor,%0A%0AI just ran the calculator. My latency tax is $${latencyTax.toLocaleString()}. I'd like to see if we qualify for an Interceptor build.`}
+                    href="https://calendly.com/your-booking-link"
                     className="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-lg shadow-red-900/20"
                   >
                     Book a Pipeline Architecture Audit
