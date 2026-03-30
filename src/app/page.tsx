@@ -23,32 +23,33 @@ export default function PipelineCalculatorPage() {
     }).format(val);
   };
 
-  const calculateBleed = () => {
-    if (!leads || !acv || !winRate || !responseTime) return;
+  // RE-ENGINEERED: Real-time reactive calculation
+  const L = Number(leads) || 0;
+  const A = Number(acv) || 0;
+  const W = (Number(winRate) || 0) / 100;
+  
+  const currentBaseline = L * W * A;
+  
+  let conversionPenalty = 0;
+  if (responseTime === 30) conversionPenalty = 0.15;
+  else if (responseTime === 60) conversionPenalty = 0.25;
+  else if (responseTime === 360) conversionPenalty = 0.40;
+  else if (responseTime === 720) conversionPenalty = 0.60;
+  else if (responseTime === 1440) conversionPenalty = 0.75;
+  else if (responseTime === 2880) conversionPenalty = 0.90;
 
-    const L = Number(leads);
-    const A = Number(acv);
-    const W = Number(winRate) / 100;
+  const currentLatencyTax = currentBaseline * conversionPenalty;
+  const currentActual = currentBaseline - currentLatencyTax;
+  const bleedPercentage = currentBaseline > 0 ? (currentLatencyTax / currentBaseline * 100).toFixed(0) : "0";
 
-    // Baseline: 100% of potential closes if contacted < 5 mins
-    const baseRev = L * W * A;
-
-    // The Latency Tax (HBR data: 400x drop if > 5 minutes, modeling a realistic drop curve)
-    let conversionPenalty = 0;
-    if (responseTime === 30) conversionPenalty = 0.15;
-    else if (responseTime === 60) conversionPenalty = 0.25;
-    else if (responseTime === 360) conversionPenalty = 0.40;
-    else if (responseTime === 720) conversionPenalty = 0.60;
-    else if (responseTime === 1440) conversionPenalty = 0.75;
-    else if (responseTime === 2880) conversionPenalty = 0.90;
-
-    const lostRev = baseRev * conversionPenalty;
-    const actual = baseRev - lostRev;
-
-    setBaseline(baseRev);
-    setLatencyTax(lostRev);
-    setActualCaptured(actual);
-    setShowResults(true);
+  const handleCalculate = () => {
+    if (leads && acv && winRate && responseTime) {
+      setShowResults(true);
+      // Optional: scroll to results
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 100);
+    }
   };
 
   return (
@@ -139,7 +140,7 @@ export default function PipelineCalculatorPage() {
           </div>
 
           <button
-            onClick={calculateBleed}
+            onClick={handleCalculate}
             className="w-full bg-gold-500 hover:bg-gold-400 text-[#121212] font-bold py-4 rounded-lg transition-all flex items-center justify-center gap-2"
           >
             Calculate My Pipeline Bleed
@@ -151,13 +152,13 @@ export default function PipelineCalculatorPage() {
         <AnimatePresence>
           {showResults && (
             <motion.div
-              key={`${baseline}-${latencyTax}`}
+              key={`${currentBaseline}-${currentLatencyTax}`}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-charcoal-900 border border-charcoal-800 rounded-2xl p-6 md:p-8 shadow-2xl ring-1 ring-white/5 relative overflow-hidden"
             >
               {/* Subtle Red glow for pain */}
-              {latencyTax > 0 && (
+              {currentLatencyTax > 0 && (
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-900/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
               )}
               
@@ -169,7 +170,7 @@ export default function PipelineCalculatorPage() {
                   className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 transition-colors hover:border-gold-500/30"
                 >
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Baseline Revenue</span>
-                  <span className="text-2xl md:text-3xl font-black text-white block mb-1 break-words">{formatCurrency(baseline)}</span>
+                  <span className="text-2xl md:text-3xl font-black text-white block mb-1 break-words">{formatCurrency(currentBaseline)}</span>
                   <span className="text-xs text-gray-500">If contacted &lt; 5 mins</span>
                 </motion.div>
                 
@@ -178,7 +179,7 @@ export default function PipelineCalculatorPage() {
                   className="bg-red-950/20 border border-red-900/30 rounded-xl p-5 relative overflow-hidden transition-colors hover:border-red-500/30"
                 >
                   <span className="text-xs font-bold text-red-400 uppercase tracking-wider block mb-1">Your "Latency Tax"</span>
-                  <span className="text-2xl md:text-3xl font-black text-red-500 block mb-1 break-words">-{formatCurrency(latencyTax)}</span>
+                  <span className="text-2xl md:text-3xl font-black text-red-500 block mb-1 break-words">-{formatCurrency(currentLatencyTax)}</span>
                   <span className="text-xs text-red-500/70">Pipeline burned</span>
                 </motion.div>
                 
@@ -187,18 +188,18 @@ export default function PipelineCalculatorPage() {
                   className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 transition-colors hover:border-gold-500/30"
                 >
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Actual Captured</span>
-                  <span className="text-2xl md:text-3xl font-black text-white block mb-1 break-words">{formatCurrency(actualCaptured)}</span>
+                  <span className="text-2xl md:text-3xl font-black text-white block mb-1 break-words">{formatCurrency(currentActual)}</span>
                   <span className="text-xs text-gray-500">What sales actually closes</span>
                 </motion.div>
               </div>
 
-              {latencyTax > 0 ? (
+              {currentLatencyTax > 0 ? (
                 <div className="bg-[#121212] border border-gold-500/20 rounded-xl p-6 md:p-8 text-center relative z-10">
                   <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
                     <Activity size={28} />
                   </div>
                   <h3 className="text-xl font-bold text-white mb-3">
-                    Your pipeline is bleeding <span className="text-red-500">{(latencyTax / baseline * 100).toFixed(0)}%</span> of its potential.
+                    Your pipeline is bleeding <span className="text-red-500">{bleedPercentage}%</span> of its potential.
                   </h3>
                   <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-lg mx-auto">
                     You can try fixing this by hiring more SDRs and writing strict SLAs. But humans sleep, eat, and forget.
